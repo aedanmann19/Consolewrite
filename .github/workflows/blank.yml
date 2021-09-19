@@ -1,0 +1,40 @@
+;~ Example 2 Finding the taskbar and clicking on the start menu button
+#include <EditConstants.au3>
+#include <GUIConstantsEx.au3>
+#include <WindowsConstants.au3>
+#include <WinAPI.au3>
+#include "CUIAutomation2.au3"
+#include "UIAWrappers.au3"
+
+#AutoIt3Wrapper_UseX64=Y  ;Should be used for stuff like tagpoint having right struct etc. when running on a 64 bits os
+
+;~ To prevent some FAQ questions
+consolewrite("*** Some important settings you can find in " & @scriptdir & "\UIA.CFG ***" & @CRLF)
+consolewrite("*** " & _UIA_getVersionInfoString() )
+consolewrite("*** If logging is turned on you can find it here :" & _UIA_getVar("logFileName") & @CRLF)
+
+Consolewrite("**** All childs of the taskbar will be written to logfile see xml or txt file created in folder of example .au3 file ****" & @CRLF)
+Consolewrite("** Logfile default location: " & _uia_getVar("logfilename") & @CRLF)
+
+;~ Maintainable way for doing stuff with taskbar and startbutton by giving logical name to technical description
+_UIA_setVar("oTaskbar","Title:=;controltype:=UIA_PaneControlTypeId;class:=Shell_TrayWnd")    ;
+_UIA_setVar("oStartbutton","title:=Starten;classname:=Start")
+
+$oTaskBar=_UIA_gettaskbar()
+_UIA_DumpThemAll($otaskbar,$treescope_subtree)
+
+local $pInvoke, $oStart
+local $CaptionStartButton
+
+Consolewrite("**** try to click on the start button of the taskbar ****" & @CRLF)
+Consolewrite("Your languagecode influences name of start button and your languagecode is: " & @oslang & @CRLF)
+switch @OSLang
+    case 0409
+        $CaptionStartButton="start"
+    case 0413
+        $CaptionStartButton="Starten"
+    case 1033
+        $CaptionStartButton="Start"
+    case Else
+        MsgBox($MB_SYSTEMMODAL, "Title", "Language unknown please extend script with right caption of start button and post it in thread", 3)
+EndSwitch
